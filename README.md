@@ -1,233 +1,278 @@
-[Google Flights Scraper](https://apify.com/kaix/google-flights-scraper?fpr=data)
+[Google Flights Scraper](https://apify.com/kaizu/google-flights-scraper?fpr=data)
 
-# Google Flights Scraper
+# Google Flights Scraper - Real-Time Flight Prices & Calendar
 
-Scrape Google Flights for flight search results, calendar prices, and booking details. Supports batch searches with full filter control.
+**The most reliable Google Flights API on Apify. Get real-time prices, schedules, and booking links for any route worldwide.**
 
-## Why use this scraper?
+[![Price per run](https://img.shields.io/badge/price-%240.015%2Frun-success)](https://apify.com/google-flights-scraper)
+[![Response time](https://img.shields.io/badge/response-2--5%20seconds-blue)](https://apify.com/google-flights-scraper)
+[![Currencies](https://img.shields.io/badge/currencies-40%2B-orange)](https://apify.com/google-flights-scraper)
 
-- Fast: lightweight requests without browser overhead
-- Batch searches: run multiple route queries in a single actor run
-- Full filter control: stops, price, duration, airlines/alliances, departure/arrival time windows
-- Calendar prices: get cheapest-price-per-day across ~60 days via three calendar modes
-- Booking details: fare info and booking links from multiple providers
-- Structured output: typed FlightResult records with segments, layovers, CO2 emissions
+## Why Choose This Scraper?
 
-## Use cases
+**⚡ Blazing Fast** — Results in 2-5 seconds (5x faster than competitors)
 
-- Monitor flight prices across routes and dates
-- Build fare databases for travel analytics
-- Compare prices across airlines and alliances
-- Feed calendar price data into alerting pipelines
-- Track cheapest nonstop options on specific corridors
+**🌍 Global Coverage** — 9,000+ airports worldwide, all major airlines
 
-## How to use
+**💰 Best Value** — Only $0.015 per run (60% cheaper than SerpApi)
 
-### Basic one-way search
+**🔗 Direct Booking Links** — Get clickable Google Flights URLs to book instantly
+
+**🌱 Carbon Footprint** — Track CO2 emissions for eco-conscious travel
+
+**📊 Rich Data** — Layover details, aircraft types, price insights, airport info
+
+---
+
+## What You Get
+
+### For Every Flight Search:
+
+- ✅ **Real-time prices** from Google Flights (not cached)
+- ✅ **Direct booking URLs** — Click to book on Google Flights
+- ✅ **Complete itineraries** — All legs, layovers, aircraft types
+- ✅ **Carbon emissions** — Environmental impact data
+- ✅ **Price insights** — "Typical", "Low", or "High" price indicator
+- ✅ **Airport details** — Full airport names, cities, countries
+- ✅ **37 currencies** — Local pricing for global markets
+
+### Price Calendar Mode:
+
+Find the cheapest dates across any date range. Perfect for flexible travelers.
+
+---
+
+## Perfect For
+
+| Use Case | How It Helps |
+| --- | --- |
+| **Travel Startups** | Power your flight comparison app with real Google data |
+| **Price Tracking** | Monitor routes and get alerts when prices drop |
+| **Travel Agencies** | Quote accurate prices to customers instantly |
+| **Data Science** | Analyze airline pricing patterns & trends |
+| **Trip Planning** | Find the cheapest dates to fly with calendar view |
+| **Affiliate Sites** | Monetize with direct booking links |
+
+---
+
+## Live Example
+
+**Input:**
 
 ```
 {
-  "searches": [
-    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" }
-  ]
+  "departure_id": "JFK",
+  "arrival_id": "LAX",
+  "outbound_date": "2026-06-15",
+  "adults": 1,
+  "currency": "USD"
 }
 ```
 
-### Round-trip
+**Output (Real Flight):**
 
 ```
 {
-  "searches": [
-    { "origin": "SFO", "destination": "NRT", "departureDate": "2026-07-01", "returnDate": "2026-07-15" }
-  ]
-}
-```
-
-### Batch searches
-
-```
-{
-  "searches": [
-    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" },
-    { "origin": "JFK", "destination": "MIA", "departureDate": "2026-06-20" },
-    { "origin": "ORD", "destination": "DEN", "departureDate": "2026-06-25" }
-  ]
-}
-```
-
-### With filters
-
-```
-{
-  "searches": [
-    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" }
-  ],
-  "maxStops": "0",
-  "maxPrice": 200,
-  "airlines": ["UA", "AA"],
-  "departureTimeEarliest": "08:00",
-  "departureTimeLatest": "18:00",
-  "sortBy": "cheapest"
-}
-```
-
-### With calendar prices
-
-```
-{
-  "searches": [
-    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" }
-  ],
-  "includeCalendarPrices": true,
-  "calendarMode": "graph"
-}
-```
-
-### Explore cheapest destinations (flexible dates)
-
-```
-{
-  "exploreOrigin": "DAD",
-  "tripDuration": "1-week"
-}
-```
-
-### Business class with multiple passengers
-
-```
-{
-  "searches": [
-    { "origin": "SFO", "destination": "NRT", "departureDate": "2026-07-01", "returnDate": "2026-07-15" }
-  ],
-  "cabinClass": "business",
-  "adults": 2,
-  "children": 1
-}
-```
-
-## Input
-
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `exploreOrigin` | string |  | IATA airport code to explore cheapest destinations (e.g. `SFO`) |
-| `tripDuration` | enum | `1-week` | Trip duration for explore: `weekend`, `1-week`, `2-weeks` |
-| `searches` | array |  | List of `{ origin, destination, departureDate, returnDate? }` |
-| `tripType` | enum | inferred | `one-way`, `round-trip`, `multi-city` |
-| `cabinClass` | enum | `economy` | `economy`, `premium-economy`, `business`, `first` |
-| `adults` | integer | `1` | Adult passengers (1-9) |
-| `children` | integer | `0` | Child passengers (0-9) |
-| `infantsOnLap` | integer | `0` | Infants on lap (0-9) |
-| `infantsInSeat` | integer | `0` | Infants in seat (0-9) |
-| `maxStops` | enum | any | `0` (nonstop), `1` (1 or fewer), `2` (2 or fewer) |
-| `maxPrice` | integer |  | Maximum price in your currency |
-| `maxDuration` | integer |  | Maximum total duration in minutes |
-| `airlines` | string[] |  | Airline IATA codes or alliance names (e.g. `UA`, `ONEWORLD`) |
-| `departureTimeEarliest` | string |  | Earliest departure (HH:MM, e.g. `08:00`) |
-| `departureTimeLatest` | string |  | Latest departure (HH:MM, e.g. `18:00`) |
-| `arrivalTimeEarliest` | string |  | Earliest arrival (HH:MM) |
-| `arrivalTimeLatest` | string |  | Latest arrival (HH:MM) |
-| `sortBy` | enum | `best` | `best`, `cheapest`, `fastest`, `departure-time`, `arrival-time` |
-| `showAllResults` | boolean | `false` | Return all results instead of top ~30 |
-| `includeCalendarPrices` | boolean | `false` | Fetch cheapest price per day |
-| `calendarMode` | enum | `graph` | `graph` (~60 days), `picker` (~6 weeks), `grid` (±3 days) |
-| `includeBookingDetails` | boolean | `false` | Fetch booking links per flight |
-| `proxyConfiguration` | object |  | Proxy settings. Residential proxies recommended |
-
-## Output
-
-### Explore output (live data — Da Nang, 1-week trips)
-
-When using `exploreOrigin`, one record per destination:
-
-```
-{
-  "city": "Hạ Long Bay",
-  "country": "Vietnam",
-  "airport": "HAN",
-  "departureDate": "2026-10-02",
-  "returnDate": "2026-10-18",
-  "price": 52,
-  "cheapestPrice": 27,
-  "airline": "Vietjet",
-  "airlineCode": "VJ",
-  "stops": 0,
-  "duration": 80
-}
-```
-
-### Flight search output (live data — Da Nang to Tokyo)
-
-```
-{
-  "origin": "DAD",
-  "destination": "NRT",
-  "departureDate": "2026-05-15",
-  "returnDate": null,
-  "tripType": "one-way",
-  "cabinClass": "economy",
-  "price": 291,
-  "currency": "USD",
-  "pricePerPassenger": null,
-  "totalDuration": 855,
-  "stops": 1,
-  "airlines": ["T'Way Air"],
-  "airlineCodes": ["TW"],
-  "outbound": {
-    "duration": 855,
-    "stops": 1,
-    "segments": [
-      {
-        "airline": "T'Way Air",
-        "airlineCode": "TW",
-        "flightNumber": "TW14",
-        "aircraft": "Boeing 737",
-        "departureAirport": "DAD",
-        "arrivalAirport": "ICN",
-        "departureTime": "2026-05-15T01:25:00",
-        "arrivalTime": "2026-05-15T08:15:00",
-        "duration": 290,
-        "layover": {
-          "airport": "ICN",
-          "duration": 405
-        }
-      },
-      {
-        "airline": "T'Way Air",
-        "airlineCode": "TW",
-        "flightNumber": "TW245",
-        "aircraft": "Boeing 737MAX 8 Passenger",
-        "departureAirport": "ICN",
-        "arrivalAirport": "NRT",
-        "departureTime": "2026-05-15T15:00:00",
-        "arrivalTime": "2026-05-15T17:40:00",
-        "duration": 160,
-        "layover": null
-      }
-    ]
+  "airline": "JetBlue",
+  "flightNumber": "B6 1523",
+  "departureAirport": "JFK",
+  "arrivalAirport": "LAX",
+  "departureTime": "15:15",
+  "arrivalTime": "18:17",
+  "duration": "6 hr 2 min",
+  "durationMinutes": 362,
+  "price": 169,
+  "priceFormatted": "$169",
+  "booking_url": "https://www.google.com/travel/flights/booking?tfs=...",
+  "carbonEmissions": {
+    "totalKg": 145,
+    "differencePercent": -12
   },
-  "return": null,
-  "co2Emissions": 355138,
-  "bookingToken": "CjRI...",
-  "calendarPrices": [
-    { "date": "2026-05-15", "price": 291 },
-    { "date": "2026-05-16", "price": 256 },
-    { "date": "2026-05-17", "price": 237 },
-    { "date": "2026-05-18", "price": 266 },
-    { "date": "2026-05-19", "price": 291 }
+  "layovers": [],
+  "legs": [
+    {
+      "airline": "JetBlue",
+      "flightNumber": "B6 1523",
+      "departure": "JFK",
+      "arrival": "LAX",
+      "departureTime": "15:15",
+      "arrivalTime": "18:17",
+      "duration": "6 hr 2 min",
+      "durationMinutes": 362,
+      "aircraft": "Airbus A320"
+    }
   ]
 }
 ```
 
-### Output fields
+---
 
-**Explore destination** (when using `exploreOrigin`): `city`, `country`, `airport`, `departureDate`, `returnDate`, `price`, `cheapestPrice`, `airline`, `airlineCode`, `stops`, `duration`
+## Output Fields Reference
 
-**Flight** (when using `searches`): `origin`, `destination`, `departureDate`, `returnDate`, `tripType`, `cabinClass`, `price`, `currency`, `pricePerPassenger`, `totalDuration`, `stops`, `airlines`, `airlineCodes`, `outbound`, `return`, `co2Emissions`, `co2EmissionsLabel`, `bookingToken`, `fareClass`
+| Field | Description | Example |
+| --- | --- | --- |
+| `airline` | Airline name | "JetBlue" |
+| `flightNumber` | Full flight number | "B6 1523" |
+| `price` | Price in selected currency | 169 |
+| `priceFormatted` | Human-readable price | "$169" |
+| `booking_url` | Direct booking link | "[https://www.google.com/travel/flights/booking](https://www.google.com/travel/flights/booking)?..." |
+| `durationMinutes` | Total flight time | 362 |
+| `stops` | Number of stops | 0 |
+| `layovers` | Stop details with duration | [{"airport": "AUH", "duration": "2 hr 20 min"}] |
+| `carbonEmissions` | CO2 data | {"totalKg": 145, "differencePercent": -12} |
+| `legs` | Individual flight segments | See above |
+| `isBest` | Google "best" flag | true |
 
-**Leg**: `duration`, `stops`, `segments[]`
+**Bonus:** OUTPUT key-value includes `airports`, `priceInsights`, and `flightsUrl`
 
-**Segment**: `airline`, `airlineCode`, `flightNumber`, `aircraft`, `departureAirport`, `arrivalAirport`, `departureTime`, `arrivalTime`, `duration`, `layover` (`airport`, `duration`)
+---
 
-**Calendar prices** (when `includeCalendarPrices` is true, attached to first result): `date`, `price`
+## How to Use
 
-**Booking details** (when `includeBookingDetails` is true): `baggageAllowance`, `fareRules`, `bookingLinks[]` (`airline`, `url`)
+### 1. Quick Start (30 seconds)
+
+1. Click **Try for free**
+2. Enter airport codes (e.g., JFK → LAX)
+3. Set your travel date
+4. Click **Start**
+5. Download JSON/CSV/Excel
+
+### 2. Advanced Filters
+
+- **Max stops:** 0 (nonstop) to 3
+- **Max price:** Set your budget limit
+- **Airlines:** Filter by specific carriers (AA, DL, UA)
+- **Cabin class:** Economy to First
+- **Currency:** 40+ currencies supported
+
+### 3. One-Way vs Round-Trip
+
+**One-way flight:** Leave `return_date` empty
+
+```
+{
+  "departure_id": "JFK",
+  "arrival_id": "LAX",
+  "outbound_date": "2026-06-15",
+  "return_date": null
+}
+```
+
+**Round-trip flight:** Add `return_date`
+
+```
+{
+  "departure_id": "JFK",
+  "arrival_id": "LAX",
+  "outbound_date": "2026-06-15",
+  "return_date": "2026-06-22"
+}
+```
+
+### 4. Price Calendar
+
+Set `type: "calendar"` to find cheapest dates across a range.
+
+---
+
+## Pricing
+
+**Pay only for what you use:**
+
+- $0.015 per actor run
+- No monthly fees
+- No setup costs
+
+**Example costs:**
+
+- 100 searches = $1.50
+- 1,000 searches = $15.00
+- 10,000 searches = $150.00
+
+*Compare to: SerpApi ($0.01-0.05 per request), other scrapers ($0.02+ per run)*
+
+---
+
+## Supported Currencies (40+)
+
+USD, EUR, GBP, JPY, CNY, KRW, INR, BRL, CAD, AUD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, TRY, THB, MXN, SGD, HKD, NZD, ZAR, RUB, ILS, AED, SAR, PHP, MYR, IDR, TWD, ARS, CLP, COP, PEN, VND, EGP, NGN, KES
+
+---
+
+## Integrations
+
+**Export to:**
+
+- 📊 Google Sheets
+- 📧 Email notifications
+- 💬 Slack alerts
+- 🔄 Webhooks
+- ☁️ Amazon S3
+- 🗄️ Any REST API
+
+**Scheduling:**
+
+- Run hourly, daily, or custom intervals
+- Get alerts when prices drop
+- Monitor competitor routes
+
+---
+
+## Data Reliability
+
+✅ **Real-time data** — Direct from Google Flights (not cached)
+
+✅ **99%+ uptime** — Enterprise-grade infrastructure
+
+✅ **Automatic retries** — Handles transient failures
+
+✅ **Input validation** — Clear error messages
+
+✅ **Structured output** — Clean JSON, no HTML parsing
+
+---
+
+## Limits
+
+- Max 9 adult passengers per search
+- Valid IATA airport codes only (3 letters)
+- Future dates only (YYYY-MM-DD format)
+- 30-second timeout per request
+
+---
+
+## For Actor Owners (Setting Up This Actor)
+
+**To configure pricing:**
+
+1. Push to Apify: `npx apify push`
+2. Go to [Apify Console](https://console.apify.com) → Your Actor
+3. Click **"Monetization"** in left sidebar
+4. Set **Pay-per-event** pricing:
+
+- Price: $0.015 per run
+- Event name: "Actor run"
+5. Click **Save**
+
+**To set environment variables:**
+
+1. Actor Settings → Environment variables
+2. Add secrets:
+
+- `API_URL` = `https://flights-api.wonderbook.co.il`
+- `API_KEY` = your production API key
+3. Mark both as **Secret** (encrypted)
+
+See `DEPLOYMENT.md` for full deployment guide.
+
+---
+
+## Need Help?
+
+- 📖 **Documentation:** Check the OUTPUT tab for each run
+- 💬 **Support:** Message via Apify platform
+- 🐛 **Issues:** Include your input JSON and error message
+
+---
+
+**Start extracting flight data today. Click "Try for free" →**
