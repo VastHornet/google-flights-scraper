@@ -1,278 +1,135 @@
-[Google Flights Scraper](https://apify.com/kaizu/google-flights-scraper?fpr=data)
+[Google Flights Scraper](https://apify.com/scrape.badger/google-flights-scraper?fpr=data)
 
-# Google Flights Scraper - Real-Time Flight Prices & Calendar
+## What does Google Flights Scraper do?
 
-**The most reliable Google Flights API on Apify. Get real-time prices, schedules, and booking links for any route worldwide.**
+Scrape [Google Flights](https://www.google.com/travel/flights) at scale — one-way, round-trip, and multi-city fares across all airlines, with cabin class, stops, and price filters.
 
-[![Price per run](https://img.shields.io/badge/price-%240.015%2Frun-success)](https://apify.com/google-flights-scraper)
-[![Response time](https://img.shields.io/badge/response-2--5%20seconds-blue)](https://apify.com/google-flights-scraper)
-[![Currencies](https://img.shields.io/badge/currencies-40%2B-orange)](https://apify.com/google-flights-scraper)
+## Why use Google Flights Scraper?
 
-## Why Choose This Scraper?
+- **Every cabin class.** Economy, Premium Economy, Business, First.
+- **One-way, round-trip, multi-city.** All Google Flights trip types.
+- **Stops + airline filters.** Non-stop only, one-stop, or all; whitelist / blacklist airlines.
+- **Currency + country targeting.** Local prices for your customer base.
+- **Price insights.** When Google returns them — typical price range, lowest-price recent history.
 
-**⚡ Blazing Fast** — Results in 2-5 seconds (5x faster than competitors)
+## What data can Google Flights Scraper extract?
 
-**🌍 Global Coverage** — 9,000+ airports worldwide, all major airlines
-
-**💰 Best Value** — Only $0.015 per run (60% cheaper than SerpApi)
-
-**🔗 Direct Booking Links** — Get clickable Google Flights URLs to book instantly
-
-**🌱 Carbon Footprint** — Track CO2 emissions for eco-conscious travel
-
-**📊 Rich Data** — Layover details, aircraft types, price insights, airport info
-
----
-
-## What You Get
-
-### For Every Flight Search:
-
-- ✅ **Real-time prices** from Google Flights (not cached)
-- ✅ **Direct booking URLs** — Click to book on Google Flights
-- ✅ **Complete itineraries** — All legs, layovers, aircraft types
-- ✅ **Carbon emissions** — Environmental impact data
-- ✅ **Price insights** — "Typical", "Low", or "High" price indicator
-- ✅ **Airport details** — Full airport names, cities, countries
-- ✅ **37 currencies** — Local pricing for global markets
-
-### Price Calendar Mode:
-
-Find the cheapest dates across any date range. Perfect for flexible travelers.
-
----
-
-## Perfect For
-
-| Use Case | How It Helps |
-| --- | --- |
-| **Travel Startups** | Power your flight comparison app with real Google data |
-| **Price Tracking** | Monitor routes and get alerts when prices drop |
-| **Travel Agencies** | Quote accurate prices to customers instantly |
-| **Data Science** | Analyze airline pricing patterns & trends |
-| **Trip Planning** | Find the cheapest dates to fly with calendar view |
-| **Affiliate Sites** | Monetize with direct booking links |
-
----
-
-## Live Example
-
-**Input:**
-
-```
-{
-  "departure_id": "JFK",
-  "arrival_id": "LAX",
-  "outbound_date": "2026-06-15",
-  "adults": 1,
-  "currency": "USD"
-}
-```
-
-**Output (Real Flight):**
-
-```
-{
-  "airline": "JetBlue",
-  "flightNumber": "B6 1523",
-  "departureAirport": "JFK",
-  "arrivalAirport": "LAX",
-  "departureTime": "15:15",
-  "arrivalTime": "18:17",
-  "duration": "6 hr 2 min",
-  "durationMinutes": 362,
-  "price": 169,
-  "priceFormatted": "$169",
-  "booking_url": "https://www.google.com/travel/flights/booking?tfs=...",
-  "carbonEmissions": {
-    "totalKg": 145,
-    "differencePercent": -12
-  },
-  "layovers": [],
-  "legs": [
-    {
-      "airline": "JetBlue",
-      "flightNumber": "B6 1523",
-      "departure": "JFK",
-      "arrival": "LAX",
-      "departureTime": "15:15",
-      "arrivalTime": "18:17",
-      "duration": "6 hr 2 min",
-      "durationMinutes": 362,
-      "aircraft": "Airbus A320"
-    }
-  ]
-}
-```
-
----
-
-## Output Fields Reference
-
-| Field | Description | Example |
+| Field | Type | Description |
 | --- | --- | --- |
-| `airline` | Airline name | "JetBlue" |
-| `flightNumber` | Full flight number | "B6 1523" |
-| `price` | Price in selected currency | 169 |
-| `priceFormatted` | Human-readable price | "$169" |
-| `booking_url` | Direct booking link | "[https://www.google.com/travel/flights/booking](https://www.google.com/travel/flights/booking)?..." |
-| `durationMinutes` | Total flight time | 362 |
-| `stops` | Number of stops | 0 |
-| `layovers` | Stop details with duration | [{"airport": "AUH", "duration": "2 hr 20 min"}] |
-| `carbonEmissions` | CO2 data | {"totalKg": 145, "differencePercent": -12} |
-| `legs` | Individual flight segments | See above |
-| `isBest` | Google "best" flag | true |
+| result_group | string | `best` or `other` |
+| price / currency | number / string | Total fare |
+| airline | string | Primary carrier |
+| flights | array | Per-segment info (origin / dest / times / aircraft) |
+| duration | string | Total journey time |
+| stops | number | Layover count |
+| layovers | array | Layover airport + duration |
+| carbon_emissions | object | Google's CO2 estimate in kg |
 
-**Bonus:** OUTPUT key-value includes `airports`, `priceInsights`, and `flightsUrl`
+## How to scrape Google Flights
 
----
+1. Click **Try for free**.
+2. Enter `departure_id` (IATA code, e.g. `JFK`) and `arrival_id` (e.g. `LAX`).
+3. Set `outbound_date` (and `return_date` if round-trip).
+4. Optional: passengers (`adults`, `children`, …), `travel_class`, `stops`, `max_price`, airline filters.
+5. Click **Start** — each flight offer streams into the dataset.
 
-## How to Use
+## How much will it cost?
 
-### 1. Quick Start (30 seconds)
+**$0.012 per search (≈ $12 per 1,000 searches).** One call per origin-destination-date combo. Multi-city is still one call.
 
-1. Click **Try for free**
-2. Enter airport codes (e.g., JFK → LAX)
-3. Set your travel date
-4. Click **Start**
-5. Download JSON/CSV/Excel
+### Competitor benchmark
 
-### 2. Advanced Filters
+| Actor | Author | Price | Notes |
+| --- | --- | --- | --- |
+| kaizu/google-flights-scraper | kaizu | ~$15 / 1k searches | Most popular |
+| credible_sandal/google-flights-scraper | credible_sandal | ~$18 / 1k searches | Subscription |
+| scrapier/google-flights-scraper | scrapier | ~$20 / 1k searches | Per-result |
+| **scrape-badger/google-flights-scraper** | **ScrapeBadger** | **$12 / 1k searches** | **20% below cheapest major** |
 
-- **Max stops:** 0 (nonstop) to 3
-- **Max price:** Set your budget limit
-- **Airlines:** Filter by specific carriers (AA, DL, UA)
-- **Cabin class:** Economy to First
-- **Currency:** 40+ currencies supported
+## Input
 
-### 3. One-Way vs Round-Trip
+Configure the run in the **Input** tab above, or pass a JSON object matching the fields below when calling the Actor via the Apify API.
 
-**One-way flight:** Leave `return_date` empty
+| Field | Required | Description |
+| --- | --- | --- |
+| departure_id | ✅ | IATA airport code (e.g. `JFK`). |
+| arrival_id | ✅ | IATA airport code. |
+| outbound_date | ✅ | `YYYY-MM-DD`. |
+| return_date | Round-trip only | `YYYY-MM-DD`. |
+| trip_type | — | `round_trip` (default) / `one_way` / `multi_city`. |
+| adults / children / infants_in_seat / infants_on_lap | — | Passenger counts. |
+| travel_class | — | `economy` / `premium_economy` / `business` / `first`. |
+| stops | — | `any` / `nonstop` / `one_stop` / `two_stops`. |
+| max_price | — | Upper price cap in the target currency. |
+| currency / gl / hl | — | Currency + country + language (defaults `USD` / `us` / `en`). |
+
+## Output
+
+Every successful run streams records into the run's dataset. Download as JSON, CSV, XML, Excel, or HTML from the **Dataset** tab; consume programmatically via the Apify API or webhooks.
+
+Example record:
 
 ```
 {
-  "departure_id": "JFK",
-  "arrival_id": "LAX",
-  "outbound_date": "2026-06-15",
-  "return_date": null
+  "result_group": "best",
+  "price": 412,
+  "currency": "USD",
+  "airline": "Delta",
+  "flights": [
+    {
+      "origin": "JFK",
+      "destination": "LAX",
+      "departure": "2026-12-01T08:00",
+      "arrival": "2026-12-01T11:15"
+    }
+  ],
+  "duration": "6h 15m",
+  "stops": 0,
+  "layovers": [],
+  "carbon_emissions": {
+    "this_flight": 203,
+    "typical_for_this_route": 215
+  }
 }
 ```
 
-**Round-trip flight:** Add `return_date`
+## Tips / Advanced options
 
-```
-{
-  "departure_id": "JFK",
-  "arrival_id": "LAX",
-  "outbound_date": "2026-06-15",
-  "return_date": "2026-06-22"
-}
-```
+- **Run daily for fare tracking.** Prices change hourly — a cron gets you a price history for free.
+- **Nonstop = 2-3x the price of one-stop.** Filter on `stops: nonstop` only when your customer specifically needs it.
+- **`best` vs. `other`.** `best` is Google's ranked top offers (by convenience + price). `other` is everything else — cheaper but often with worse timings.
+- **Carbon emissions for ESG reporting.** Use the `carbon_emissions.this_flight` kg figure for scope-3 tracking.
 
-### 4. Price Calendar
+## FAQ, Disclaimers, Support
 
-Set `type: "calendar"` to find cheapest dates across a range.
+### What IATA codes do you support?
 
----
+Every airport Google Flights supports (~8,000+). Major hubs + regional airports.
 
-## Pricing
+### Can I search by city?
 
-**Pay only for what you use:**
+Google accepts city codes too — `NYC` instead of `JFK` returns all NYC airports. The actor passes through whatever you provide.
 
-- $0.015 per actor run
-- No monthly fees
-- No setup costs
+### Does this include award / mileage fares?
 
-**Example costs:**
+No — Google Flights is cash-only. Use your airline's website for award availability.
 
-- 100 searches = $1.50
-- 1,000 searches = $15.00
-- 10,000 searches = $150.00
+### Multi-city?
 
-*Compare to: SerpApi ($0.01-0.05 per request), other scrapers ($0.02+ per run)*
+Yes — set `trip_type: multi_city` and pass an array of legs via the SDK. Apify UI doesn't expose the array input directly; use the API.
 
----
+### Disclaimer
 
-## Supported Currencies (40+)
+This Actor scrapes public Google data only. You're responsible for compliance with Google's Terms of Service and any applicable data-protection laws (GDPR, CCPA, etc.) in your jurisdiction. ScrapeBadger does not store the scraped results — they are delivered directly to your Apify dataset.
 
-USD, EUR, GBP, JPY, CNY, KRW, INR, BRL, CAD, AUD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, TRY, THB, MXN, SGD, HKD, NZD, ZAR, RUB, ILS, AED, SAR, PHP, MYR, IDR, TWD, ARS, CLP, COP, PEN, VND, EGP, NGN, KES
+### Support
 
----
+Something not working? Open a ticket in the **Issues** tab above — we triage within one business day. Full API reference: [docs.scrapebadger.com](https://docs.scrapebadger.com).
 
-## Integrations
+### Related Actors
 
-**Export to:**
+- [`google-hotels-scraper`](https://apify.com/scrape-badger/google-hotels-scraper) — Hotel search + details
 
-- 📊 Google Sheets
-- 📧 Email notifications
-- 💬 Slack alerts
-- 🔄 Webhooks
-- ☁️ Amazon S3
-- 🗄️ Any REST API
+### Powered by
 
-**Scheduling:**
-
-- Run hourly, daily, or custom intervals
-- Get alerts when prices drop
-- Monitor competitor routes
-
----
-
-## Data Reliability
-
-✅ **Real-time data** — Direct from Google Flights (not cached)
-
-✅ **99%+ uptime** — Enterprise-grade infrastructure
-
-✅ **Automatic retries** — Handles transient failures
-
-✅ **Input validation** — Clear error messages
-
-✅ **Structured output** — Clean JSON, no HTML parsing
-
----
-
-## Limits
-
-- Max 9 adult passengers per search
-- Valid IATA airport codes only (3 letters)
-- Future dates only (YYYY-MM-DD format)
-- 30-second timeout per request
-
----
-
-## For Actor Owners (Setting Up This Actor)
-
-**To configure pricing:**
-
-1. Push to Apify: `npx apify push`
-2. Go to [Apify Console](https://console.apify.com) → Your Actor
-3. Click **"Monetization"** in left sidebar
-4. Set **Pay-per-event** pricing:
-
-- Price: $0.015 per run
-- Event name: "Actor run"
-5. Click **Save**
-
-**To set environment variables:**
-
-1. Actor Settings → Environment variables
-2. Add secrets:
-
-- `API_URL` = `https://flights-api.wonderbook.co.il`
-- `API_KEY` = your production API key
-3. Mark both as **Secret** (encrypted)
-
-See `DEPLOYMENT.md` for full deployment guide.
-
----
-
-## Need Help?
-
-- 📖 **Documentation:** Check the OUTPUT tab for each run
-- 💬 **Support:** Message via Apify platform
-- 🐛 **Issues:** Include your input JSON and error message
-
----
-
-**Start extracting flight data today. Click "Try for free" →**
+[ScrapeBadger](https://scrapebadger.com) — Google-optimised residential proxy pool + browser-farm fallback, 99.7% uptime, unmetered bandwidth. No CAPTCHAs reach you.
