@@ -1,234 +1,233 @@
-[Google Flights Scraper](https://apify.com/crawlio/google-flights-scraper?fpr=data)
+[Google Flights Scraper](https://apify.com/kaix/google-flights-scraper?fpr=data)
 
-## Overview
+# Google Flights Scraper
 
-Google Flights Scraper searches Google Flights and stores one dataset item per returned itinerary. It supports one-way, round-trip, and multi-city searches.
+Scrape Google Flights for flight search results, calendar prices, and booking details. Supports batch searches with full filter control.
 
-## Supported searches
+## Why use this scraper?
 
-- **One-way**: one origin, one destination, one departure date.
-- **Round-trip**: one outbound leg and one return leg.
-- **Multi-city**: two or more ordered flight legs.
+- Fast: lightweight requests without browser overhead
+- Batch searches: run multiple route queries in a single actor run
+- Full filter control: stops, price, duration, airlines/alliances, departure/arrival time windows
+- Calendar prices: get cheapest-price-per-day across ~60 days via three calendar modes
+- Booking details: fare info and booking links from multiple providers
+- Structured output: typed FlightResult records with segments, layovers, CO2 emissions
 
-## Quick start
+## Use cases
 
-1. Open the Actor on Apify.
-2. Select `oneWay`, `roundTrip`, or `multiCity`.
-3. Enter airport IATA codes, dates, passengers, currency, and language.
-4. Use Apify Proxy when Google blocks direct requests.
-5. Run the Actor and download results from the Dataset tab.
+- Monitor flight prices across routes and dates
+- Build fare databases for travel analytics
+- Compare prices across airlines and alliances
+- Feed calendar price data into alerting pipelines
+- Track cheapest nonstop options on specific corridors
 
-## Configuration
+## How to use
 
-| Field | Description | Default |
-| --- | --- | --- |
-| `operation` | Search mode: `oneWay`, `roundTrip`, or `multiCity`. | `oneWay` |
-| `origin`, `dest` | Three-letter IATA airport codes, for example `JFK` and `LHR`. | `JFK`, `LHR` |
-| `date`, `returnDate` | Travel dates in `YYYY-MM-DD` format. Leave empty to use valid future dates automatically. | Empty |
-| `seatClass` | `economy`, `premium-economy`, `business`, or `first`. | `economy` |
-| `stops` | `0` any stops, `1` nonstop, `2` max one stop. | `0` |
-| `sort` | `best`, `price`, or `duration`. | `best` |
-| `currency`, `language` | Google Flights currency and locale, for example `USD` and `en-US`. | `USD`, `en-US` |
-| `fetchAllLegs` | Multi-city only: `true` to fetch complete two-leg itineraries, `false` to only fetch the first leg. | `false` |
-| `proxyConfiguration` | Optional Apify Proxy settings. | `{"useApifyProxy": false}` |
-
-## Usage examples
-
-### One-way input
+### Basic one-way search
 
 ```
 {
-  "operation": "oneWay",
-  "oneWay": {
-    "origin": "JFK",
-    "dest": "LHR",
-    "date": "",
-    "adults": 1,
-    "seatClass": "economy",
-    "stops": 0,
-    "sort": "best",
-    "currency": "USD",
-    "language": "en-US"
-  },
-  "proxyConfiguration": {
-    "useApifyProxy": true
-  }
-}
-```
-
-### Round-trip input
-
-```
-{
-  "operation": "roundTrip",
-  "roundTrip": {
-    "origin": "JFK",
-    "dest": "LHR",
-    "date": "",
-    "returnDate": "",
-    "adults": 1,
-    "seatClass": "economy",
-    "currency": "USD",
-    "language": "en-US"
-  },
-  "proxyConfiguration": {
-    "useApifyProxy": true
-  }
-}
-```
-
-### Multi-city input
-
-```
-{
-  "operation": "multiCity",
-  "multiCity": {
-    "legs": "[{\"origin\":\"JFK\",\"dest\":\"LHR\",\"date\":\"2026-06-01\"},{\"origin\":\"LHR\",\"dest\":\"CDG\",\"date\":\"2026-06-05\"}]",
-    "adults": 1,
-    "seatClass": "economy",
-    "stops": 0,
-    "sort": "best",
-    "currency": "USD",
-    "language": "en-US",
-    "fetchAllLegs": false
-  },
-  "proxyConfiguration": {
-    "useApifyProxy": true
-  }
-}
-```
-
-## Output Examples
-
-Results are written to the default dataset. The key-value store record `OUTPUT` contains a compact run summary.
-
-### One-way output
-
-```
-{
-  "price": 77236,
-  "airlines": ["Qatar Airways"],
-  "departure": "2026-06-01T19:05",
-  "arrival": "2026-06-02T14:05",
-  "stops": 1,
-  "duration_min": 850,
-  "segments": [
-    {
-      "from": "DAC",
-      "from_name": "Hazrat Shahjalal International Airport",
-      "to": "DOH",
-      "to_name": "Hamad International Airport",
-      "departure": "2026-06-01T19:05",
-      "arrival": "2026-06-01T21:55",
-      "duration_min": 350,
-      "plane": "Boeing 777"
-    },
-    {
-      "from": "DOH",
-      "from_name": "Hamad International Airport",
-      "to": "LHR",
-      "to_name": "Heathrow Airport",
-      "departure": "2026-06-02T07:45",
-      "arrival": "2026-06-02T14:05",
-      "duration_min": 500,
-      "plane": "Airbus A350"
-    }
+  "searches": [
+    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" }
   ]
 }
 ```
 
-### Round-trip output
+### Round-trip
 
 ```
 {
-  "price": 862,
-  "airlines": ["American"],
-  "departure": "2026-06-01T19:20",
-  "arrival": "2026-06-02T07:20",
-  "stops": 0,
-  "duration_min": 420,
-  "segments": [
-    {
-      "from": "JFK",
-      "from_name": "John F. Kennedy International Airport",
-      "to": "LHR",
-      "to_name": "Heathrow Airport",
-      "departure": "2026-06-01T19:20",
-      "arrival": "2026-06-02T07:20",
-      "duration_min": 420,
-      "plane": "Boeing 787"
-    }
+  "searches": [
+    { "origin": "SFO", "destination": "NRT", "departureDate": "2026-07-01", "returnDate": "2026-07-15" }
   ]
 }
 ```
 
-### Multi-city output
+### Batch searches
 
 ```
 {
-  "price": 1186,
-  "airlines": ["British Airways"],
-  "legs": [
-    {
-      "departure": "2026-06-01T19:10",
-      "arrival": "2026-06-02T07:20",
-      "stops": 0,
-      "duration_min": 430,
-      "airlines": ["British Airways"],
-      "segments": [
-        {
-          "from": "JFK",
-          "from_name": "John F. Kennedy International Airport",
-          "to": "LHR",
-          "to_name": "Heathrow Airport",
-          "departure": "2026-06-01T19:10",
-          "arrival": "2026-06-02T07:20",
-          "duration_min": 430,
-          "plane": "Boeing 777"
-        }
-      ]
-    },
-    {
-      "departure": "2026-06-05T12:50",
-      "arrival": "2026-06-05T15:10",
-      "stops": 0,
-      "duration_min": 80,
-      "airlines": ["British Airways"],
-      "segments": [
-        {
-          "from": "LHR",
-          "from_name": "Heathrow Airport",
-          "to": "CDG",
-          "to_name": "Paris Charles de Gaulle Airport",
-          "departure": "2026-06-05T12:50",
-          "arrival": "2026-06-05T15:10",
-          "duration_min": 80,
-          "plane": "Airbus A320neo"
-        }
-      ]
-    }
+  "searches": [
+    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" },
+    { "origin": "JFK", "destination": "MIA", "departureDate": "2026-06-20" },
+    { "origin": "ORD", "destination": "DEN", "departureDate": "2026-06-25" }
+  ]
+}
+```
+
+### With filters
+
+```
+{
+  "searches": [
+    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" }
   ],
-  "price_scope": "entire_trip",
-  "search_scope": "multi_city_complete",
-  "requested_legs": [
-    {
-      "date": "2026-06-01",
-      "origin": "JFK",
-      "dest": "LHR"
-    },
-    {
-      "date": "2026-06-05",
-      "origin": "LHR",
-      "dest": "CDG"
-    }
+  "maxStops": "0",
+  "maxPrice": 200,
+  "airlines": ["UA", "AA"],
+  "departureTimeEarliest": "08:00",
+  "departureTimeLatest": "18:00",
+  "sortBy": "cheapest"
+}
+```
+
+### With calendar prices
+
+```
+{
+  "searches": [
+    { "origin": "SFO", "destination": "LAX", "departureDate": "2026-06-15" }
+  ],
+  "includeCalendarPrices": true,
+  "calendarMode": "graph"
+}
+```
+
+### Explore cheapest destinations (flexible dates)
+
+```
+{
+  "exploreOrigin": "DAD",
+  "tripDuration": "1-week"
+}
+```
+
+### Business class with multiple passengers
+
+```
+{
+  "searches": [
+    { "origin": "SFO", "destination": "NRT", "departureDate": "2026-07-01", "returnDate": "2026-07-15" }
+  ],
+  "cabinClass": "business",
+  "adults": 2,
+  "children": 1
+}
+```
+
+## Input
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `exploreOrigin` | string |  | IATA airport code to explore cheapest destinations (e.g. `SFO`) |
+| `tripDuration` | enum | `1-week` | Trip duration for explore: `weekend`, `1-week`, `2-weeks` |
+| `searches` | array |  | List of `{ origin, destination, departureDate, returnDate? }` |
+| `tripType` | enum | inferred | `one-way`, `round-trip`, `multi-city` |
+| `cabinClass` | enum | `economy` | `economy`, `premium-economy`, `business`, `first` |
+| `adults` | integer | `1` | Adult passengers (1-9) |
+| `children` | integer | `0` | Child passengers (0-9) |
+| `infantsOnLap` | integer | `0` | Infants on lap (0-9) |
+| `infantsInSeat` | integer | `0` | Infants in seat (0-9) |
+| `maxStops` | enum | any | `0` (nonstop), `1` (1 or fewer), `2` (2 or fewer) |
+| `maxPrice` | integer |  | Maximum price in your currency |
+| `maxDuration` | integer |  | Maximum total duration in minutes |
+| `airlines` | string[] |  | Airline IATA codes or alliance names (e.g. `UA`, `ONEWORLD`) |
+| `departureTimeEarliest` | string |  | Earliest departure (HH:MM, e.g. `08:00`) |
+| `departureTimeLatest` | string |  | Latest departure (HH:MM, e.g. `18:00`) |
+| `arrivalTimeEarliest` | string |  | Earliest arrival (HH:MM) |
+| `arrivalTimeLatest` | string |  | Latest arrival (HH:MM) |
+| `sortBy` | enum | `best` | `best`, `cheapest`, `fastest`, `departure-time`, `arrival-time` |
+| `showAllResults` | boolean | `false` | Return all results instead of top ~30 |
+| `includeCalendarPrices` | boolean | `false` | Fetch cheapest price per day |
+| `calendarMode` | enum | `graph` | `graph` (~60 days), `picker` (~6 weeks), `grid` (±3 days) |
+| `includeBookingDetails` | boolean | `false` | Fetch booking links per flight |
+| `proxyConfiguration` | object |  | Proxy settings. Residential proxies recommended |
+
+## Output
+
+### Explore output (live data — Da Nang, 1-week trips)
+
+When using `exploreOrigin`, one record per destination:
+
+```
+{
+  "city": "Hạ Long Bay",
+  "country": "Vietnam",
+  "airport": "HAN",
+  "departureDate": "2026-10-02",
+  "returnDate": "2026-10-18",
+  "price": 52,
+  "cheapestPrice": 27,
+  "airline": "Vietjet",
+  "airlineCode": "VJ",
+  "stops": 0,
+  "duration": 80
+}
+```
+
+### Flight search output (live data — Da Nang to Tokyo)
+
+```
+{
+  "origin": "DAD",
+  "destination": "NRT",
+  "departureDate": "2026-05-15",
+  "returnDate": null,
+  "tripType": "one-way",
+  "cabinClass": "economy",
+  "price": 291,
+  "currency": "USD",
+  "pricePerPassenger": null,
+  "totalDuration": 855,
+  "stops": 1,
+  "airlines": ["T'Way Air"],
+  "airlineCodes": ["TW"],
+  "outbound": {
+    "duration": 855,
+    "stops": 1,
+    "segments": [
+      {
+        "airline": "T'Way Air",
+        "airlineCode": "TW",
+        "flightNumber": "TW14",
+        "aircraft": "Boeing 737",
+        "departureAirport": "DAD",
+        "arrivalAirport": "ICN",
+        "departureTime": "2026-05-15T01:25:00",
+        "arrivalTime": "2026-05-15T08:15:00",
+        "duration": 290,
+        "layover": {
+          "airport": "ICN",
+          "duration": 405
+        }
+      },
+      {
+        "airline": "T'Way Air",
+        "airlineCode": "TW",
+        "flightNumber": "TW245",
+        "aircraft": "Boeing 737MAX 8 Passenger",
+        "departureAirport": "ICN",
+        "arrivalAirport": "NRT",
+        "departureTime": "2026-05-15T15:00:00",
+        "arrivalTime": "2026-05-15T17:40:00",
+        "duration": 160,
+        "layover": null
+      }
+    ]
+  },
+  "return": null,
+  "co2Emissions": 355138,
+  "bookingToken": "CjRI...",
+  "calendarPrices": [
+    { "date": "2026-05-15", "price": 291 },
+    { "date": "2026-05-16", "price": 256 },
+    { "date": "2026-05-17", "price": 237 },
+    { "date": "2026-05-18", "price": 266 },
+    { "date": "2026-05-19", "price": 291 }
   ]
 }
 ```
 
-## Reliability notes
+### Output fields
 
-- Google Flights can return consent, verification, or incomplete pages from shared IPs.
+**Explore destination** (when using `exploreOrigin`): `city`, `country`, `airport`, `departureDate`, `returnDate`, `price`, `cheapestPrice`, `airline`, `airlineCode`, `stops`, `duration`
 
-## Legal note
+**Flight** (when using `searches`): `origin`, `destination`, `departureDate`, `returnDate`, `tripType`, `cabinClass`, `price`, `currency`, `pricePerPassenger`, `totalDuration`, `stops`, `airlines`, `airlineCodes`, `outbound`, `return`, `co2Emissions`, `co2EmissionsLabel`, `bookingToken`, `fareClass`
 
-This Actor collects publicly available flight-search results. Make sure your use case complies with applicable laws, regulations, and website terms.
+**Leg**: `duration`, `stops`, `segments[]`
+
+**Segment**: `airline`, `airlineCode`, `flightNumber`, `aircraft`, `departureAirport`, `arrivalAirport`, `departureTime`, `arrivalTime`, `duration`, `layover` (`airport`, `duration`)
+
+**Calendar prices** (when `includeCalendarPrices` is true, attached to first result): `date`, `price`
+
+**Booking details** (when `includeBookingDetails` is true): `baggageAllowance`, `fareRules`, `bookingLinks[]` (`airline`, `url`)
